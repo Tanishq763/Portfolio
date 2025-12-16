@@ -13,7 +13,7 @@ body{
   z-index:-5;
   background:
     linear-gradient(rgba(2,6,23,0.85), rgba(2,6,23,0.85)),
-    url("assets/cyberpunk-bg.webp");
+    url("cyberpunk-bg.webp");
   background-size:cover;
   background-position:center;
   background-attachment:fixed;
@@ -255,3 +255,4 @@ pre{
   0%,100%{transform:translateY(0)}
   50%{transform:translateY(-12px)}
 }
+
