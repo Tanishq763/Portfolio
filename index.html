@@ -357,6 +357,28 @@ footer{padding:36px 68px;border-top:1px solid var(--br);display:flex;justify-con
 .rm-foot-txt span{color:var(--g);}
 .rm-hint{font-family:var(--mono);font-size:10px;color:var(--mu);letter-spacing:.08em;}
 
+
+/* Resume preview card */
+.rm-preview{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;padding:48px 24px;text-align:center;background:var(--bg);
+}
+.rm-preview-icon{font-size:72px;filter:drop-shadow(0 8px 24px rgba(0,245,160,.3));animation:floatIcon 3s ease-in-out infinite;}
+@keyframes floatIcon{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.rm-preview-name{font-family:var(--mono);font-size:16px;color:var(--tx);font-weight:600;letter-spacing:.04em;}
+.rm-preview-meta{font-family:var(--mono);font-size:11px;color:var(--mu);letter-spacing:.12em;}
+.rm-preview-btns{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap;justify-content:center;}
+.rm-view-btn,.rm-dl-btn{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  padding:13px 28px;border:none;cursor:none;font-weight:700;
+  transition:box-shadow .2s,transform .15s;
+}
+.rm-view-btn{background:var(--s2);color:var(--g);border:1px solid var(--g);}
+.rm-view-btn:hover{background:rgba(0,245,160,.1);box-shadow:0 4px 20px rgba(0,245,160,.25);transform:translateY(-2px);}
+.rm-dl-btn{background:var(--g);color:var(--bg);}
+.rm-dl-btn:hover{box-shadow:0 4px 24px rgba(0,245,160,.4);transform:translateY(-2px);}
+.rm-preview-note{font-family:var(--mono);font-size:10px;color:var(--mu);letter-spacing:.1em;opacity:.6;}
+
 /* MOBILE */
 @media(max-width:900px){
   nav{padding:16px 24px;}.nav-links{display:none;}
@@ -422,15 +444,21 @@ footer{padding:36px 68px;border-top:1px solid var(--br);display:flex;justify-con
         </div>
       </div>
       <div class="rm-actions">
-        <a class="rm-dl" href="#" onclick="downloadResume(event)">⬇ Download PDF</a>
+        <button class="rm-dl" onclick="dlResume()">⬇ Download PDF</button>
         <button class="rm-close" onclick="closeResume()">✕</button>
       </div>
     </div>
-    <div class="rm-body">
-      <iframe id="resume-frame" src="" title="Tanishq Agrawal Resume"></iframe>
-      <div class="rm-fallback" id="rm-fallback">
-        <p>Your browser blocked the inline preview.<br>No worries — download it directly below.</p>
-        <a class="rm-dl" href="#" onclick="downloadResume(event)">⬇ Download Resume PDF</a>
+    <div class="rm-body" id="rm-body">
+      <!-- Resume preview card — no iframe, no auto-load -->
+      <div class="rm-preview">
+        <div class="rm-preview-icon">📄</div>
+        <div class="rm-preview-name">Tanishq_Agrawal_Resume.pdf</div>
+        <div class="rm-preview-meta">B.Tech CSE · MANIT Bhopal · 2024–2028</div>
+        <div class="rm-preview-btns">
+          <button class="rm-view-btn" onclick="viewResume()">👁 View Resume</button>
+          <button class="rm-dl-btn" onclick="dlResume()">⬇ Download PDF</button>
+        </div>
+        <div class="rm-preview-note">Opens in a new tab · No automatic downloads</div>
       </div>
     </div>
     <div class="rm-foot">
@@ -828,7 +856,7 @@ footer{padding:36px 68px;border-top:1px solid var(--br);display:flex;justify-con
 const dot=document.getElementById("dot"),ring=document.getElementById("ring");
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+"px";dot.style.top=my+"px";});
-document.querySelectorAll("a,button,.stag,.cp-card,.pj-card,.dsa-card,.sk-cat,.cp-ei,.slink").forEach(el=>{
+document.querySelectorAll("a,button,.stag,.cp-card,.pj-card,.dsa-card,.sk-cat,.cp-ei,.slink,.rm-view-btn,.rm-dl-btn,.rm-dl").forEach(el=>{
   el.addEventListener("mouseenter",()=>document.body.classList.add("hov"));
   el.addEventListener("mouseleave",()=>document.body.classList.remove("hov"));
 });
@@ -940,36 +968,37 @@ document.querySelectorAll(".fill[data-w]").forEach(b=>bo.observe(b));
 document.querySelectorAll("a[href^=\"#\"]").forEach(a=>{a.addEventListener("click",e=>{e.preventDefault();const t=document.querySelector(a.getAttribute("href"));if(t)t.scrollIntoView({behavior:"smooth",block:"start"});});});
 
 /* RESUME MODAL */
-const RESUME_URL = "https://raw.githubusercontent.com/Tanishq763/Portfolio/main/Tanishq_Agrawal_resume.pdf";
-const VIEWER_URL  = "https://docs.google.com/viewer?url=https://raw.githubusercontent.com/Tanishq763/Portfolio/main/Tanishq_Agrawal_resume.pdf&embedded=true";
+// URLs stored obfuscated - browser cannot prefetch these
+function _rUrl(){ return ["https://raw.githubuserco","ntent.com/Tanishq763/Port","folio/main/Tanishq_Agraw","al_resume.pdf"].join(""); }
+function _vUrl(){ return "https://docs.google.com/viewer?url="+encodeURIComponent(_rUrl())+"&embedded=true"; }
 
 function openResume(){
-  const overlay = document.getElementById("resume-overlay");
-  const frame   = document.getElementById("resume-frame");
-  // Set iframe src ONLY now — not on page load
-  if(!frame.src || frame.src === window.location.href || frame.src === ""){
-    frame.src = VIEWER_URL;
-  }
-  overlay.classList.add("open");
+  document.getElementById("resume-overlay").classList.add("open");
   document.body.style.overflow = "hidden";
 }
 
-function downloadResume(e){
-  e.preventDefault();
-  e.stopPropagation();
+function viewResume(){
+  window.open(_vUrl(), "_blank", "noopener");
+}
+
+function dlResume(){
+  // Create a temporary anchor with obfuscated URL — only on explicit click
+  const url = _rUrl();
   const a = document.createElement("a");
-  a.href     = RESUME_URL;
-  a.download = "Tanishq_Agrawal_Resume.pdf";
-  a.target   = "_blank";
+  a.href = url;
+  a.setAttribute("download","Tanishq_Agrawal_Resume.pdf");
+  a.target = "_blank";
+  a.rel = "noopener";
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
+  setTimeout(()=>document.body.removeChild(a), 100);
 }
+
 function closeResume(){
   document.getElementById("resume-overlay").classList.remove("open");
   document.body.style.overflow = "";
-  // Don't clear src — keep it cached for next open
 }
+
 function closeResumeOvl(e){
   if(e.target===document.getElementById("resume-overlay"))closeResume();
 }
