@@ -422,15 +422,15 @@ footer{padding:36px 68px;border-top:1px solid var(--br);display:flex;justify-con
         </div>
       </div>
       <div class="rm-actions">
-        <a class="rm-dl" href="https://raw.githubusercontent.com/Tanishq763/Portfolio/main/Tanishq_Agrawal_resume.pdf" download="Tanishq_Agrawal_Resume.pdf" onclick="event.stopPropagation()">⬇ Download PDF</a>
+        <a class="rm-dl" href="#" onclick="downloadResume(event)">⬇ Download PDF</a>
         <button class="rm-close" onclick="closeResume()">✕</button>
       </div>
     </div>
     <div class="rm-body">
-      <iframe id="resume-frame" src="https://docs.google.com/viewer?url=https://raw.githubusercontent.com/Tanishq763/Portfolio/main/Tanishq_Agrawal_resume.pdf&embedded=true" title="Tanishq Agrawal Resume"></iframe>
+      <iframe id="resume-frame" src="" title="Tanishq Agrawal Resume" data-src="https://docs.google.com/viewer?url=https://raw.githubusercontent.com/Tanishq763/Portfolio/main/Tanishq_Agrawal_resume.pdf&embedded=true"></iframe>
       <div class="rm-fallback" id="rm-fallback">
         <p>Your browser blocked the inline preview.<br>No worries — download it directly below.</p>
-        <a class="rm-dl" href="https://raw.githubusercontent.com/Tanishq763/Portfolio/main/Tanishq_Agrawal_resume.pdf" download="Tanishq_Agrawal_Resume.pdf" onclick="event.stopPropagation()">⬇ Download Resume PDF</a>
+        <a class="rm-dl" href="#" onclick="downloadResume(event)">⬇ Download Resume PDF</a>
       </div>
     </div>
     <div class="rm-foot">
@@ -940,13 +940,35 @@ document.querySelectorAll(".fill[data-w]").forEach(b=>bo.observe(b));
 document.querySelectorAll("a[href^=\"#\"]").forEach(a=>{a.addEventListener("click",e=>{e.preventDefault();const t=document.querySelector(a.getAttribute("href"));if(t)t.scrollIntoView({behavior:"smooth",block:"start"});});});
 
 /* RESUME MODAL */
+const RESUME_URL = "https://raw.githubusercontent.com/Tanishq763/Portfolio/main/Tanishq_Agrawal_resume.pdf";
+const VIEWER_URL  = "https://docs.google.com/viewer?url=https://raw.githubusercontent.com/Tanishq763/Portfolio/main/Tanishq_Agrawal_resume.pdf&embedded=true";
+
 function openResume(){
-  document.getElementById("resume-overlay").classList.add("open");
-  document.body.style.overflow="hidden";
+  const overlay = document.getElementById("resume-overlay");
+  const frame   = document.getElementById("resume-frame");
+  // Set iframe src ONLY now — not on page load
+  if(!frame.src || frame.src === window.location.href || frame.src === ""){
+    frame.src = VIEWER_URL;
+  }
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function downloadResume(e){
+  e.preventDefault();
+  e.stopPropagation();
+  const a = document.createElement("a");
+  a.href     = RESUME_URL;
+  a.download = "Tanishq_Agrawal_Resume.pdf";
+  a.target   = "_blank";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 function closeResume(){
   document.getElementById("resume-overlay").classList.remove("open");
-  document.body.style.overflow="";
+  document.body.style.overflow = "";
+  // Don't clear src — keep it cached for next open
 }
 function closeResumeOvl(e){
   if(e.target===document.getElementById("resume-overlay"))closeResume();
